@@ -7,7 +7,292 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" 
           integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" 
           crossorigin=""/>
-    <link rel="stylesheet" href="styles.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            overflow: hidden;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 300;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 1.2rem;
+        }
+
+        .stats-bar {
+            background: #f8f9fa;
+            padding: 20px;
+            border-bottom: 1px solid #e9ecef;
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .stat {
+            text-align: center;
+            padding: 15px 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 3px 15px rgba(0,0,0,0.1);
+            flex: 1;
+            min-width: 160px;
+            transition: transform 0.3s ease;
+        }
+
+        .stat:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #2a5298;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            color: #6c757d;
+            font-weight: 500;
+        }
+
+        #map {
+            height: 700px;
+            width: 100%;
+        }
+
+        .targeting-info {
+            padding: 30px;
+            background: linear-gradient(135deg, #e8f4f8 0%, #f0f8ff 100%);
+            border-left: 6px solid #2a5298;
+            margin: 30px;
+            border-radius: 0 12px 12px 0;
+        }
+
+        .targeting-info h3 {
+            margin-bottom: 20px;
+            color: #2a5298;
+            font-size: 1.5rem;
+        }
+
+        .targeting-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .detail-item {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #2a5298;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .detail-item:hover {
+            transform: translateY(-3px);
+        }
+
+        .detail-label {
+            font-weight: bold;
+            color: #2a5298;
+            margin-bottom: 8px;
+            font-size: 1rem;
+        }
+
+        .detail-value {
+            color: #495057;
+            font-size: 1.1rem;
+        }
+
+        .data-summary {
+            padding: 30px;
+            background: #f8f9fa;
+            border-top: 1px solid #e9ecef;
+        }
+
+        .data-summary h3 {
+            text-align: center;
+            color: #2a5298;
+            margin-bottom: 30px;
+            font-size: 1.5rem;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .summary-item {
+            text-align: center;
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .summary-item:hover {
+            transform: translateY(-5px);
+        }
+
+        .summary-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #e74c3c;
+            margin-bottom: 10px;
+        }
+
+        .summary-text {
+            color: #6c757d;
+            font-weight: 500;
+            font-size: 1.1rem;
+        }
+
+        /* Custom Leaflet Popup Styles */
+        .leaflet-popup-content-wrapper {
+            border-radius: 12px !important;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3) !important;
+        }
+
+        .custom-popup {
+            min-width: 280px;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .custom-popup h3 {
+            margin: 0 0 15px 0;
+            color: #2a5298;
+            font-size: 1.3rem;
+            border-bottom: 2px solid #2a5298;
+            padding-bottom: 8px;
+        }
+
+        .custom-popup .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin: 15px 0;
+        }
+
+        .custom-popup .info-item {
+            background: #f8f9fa;
+            padding: 8px 12px;
+            border-radius: 6px;
+            border-left: 3px solid #3498db;
+        }
+
+        .custom-popup .info-label {
+            font-weight: bold;
+            color: #2a5298;
+            font-size: 0.9rem;
+        }
+
+        .custom-popup .info-value {
+            color: #495057;
+            margin-top: 2px;
+        }
+
+        .custom-popup .highlight {
+            background: linear-gradient(135deg, #e8f4f8 0%, #f0f8ff 100%);
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 15px;
+            border-left: 4px solid #e74c3c;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            
+            .header h1 {
+                font-size: 1.8rem;
+            }
+            
+            .header p {
+                font-size: 1rem;
+            }
+            
+            .stats-bar {
+                padding: 15px;
+            }
+            
+            .stat {
+                min-width: 140px;
+                padding: 12px 15px;
+            }
+            
+            .stat-value {
+                font-size: 1.5rem;
+            }
+            
+            #map {
+                height: 500px;
+            }
+            
+            .targeting-info, .data-summary {
+                margin: 15px;
+                padding: 20px;
+            }
+            
+            .targeting-details, .summary-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header h1 {
+                font-size: 1.5rem;
+            }
+            
+            .stats-bar {
+                flex-direction: column;
+            }
+            
+            .stat {
+                min-width: auto;
+            }
+            
+            #map {
+                height: 400px;
+            }
+        }
+    </style>
 </head>
 <body>
     <div class="container">
@@ -46,7 +331,11 @@
                 </div>
                 <div class="detail-item">
                     <div class="detail-label">Geographic Focus</div>
-                    <div class="detail-value">Scotland Central Belt Region</div>
+                    <div class="detail-value">Clackmannanshire, Scotland</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Number of Zones</div>
+                    <div class="detail-value">3 specific coordinates</div>
                 </div>
                 <div class="detail-item">
                     <div class="detail-label">Location Type</div>
@@ -54,7 +343,7 @@
                 </div>
                 <div class="detail-item">
                     <div class="detail-label">Radius per Location</div>
-                    <div class="detail-value">25 kilometers</div>
+                    <div class="detail-value">17 kilometers</div>
                 </div>
                 <div class="detail-item">
                     <div class="detail-label">Excluded Audiences</div>
@@ -71,19 +360,19 @@
             <h3>📊 Performance Summary (Aug 1-14, 2025)</h3>
             <div class="summary-grid">
                 <div class="summary-item">
-                    <div class="summary-number">6</div>
+                    <div class="summary-number">3</div>
                     <div class="summary-text">Targeting Zones</div>
                 </div>
                 <div class="summary-item">
-                    <div class="summary-number">25km</div>
+                    <div class="summary-number">17km</div>
                     <div class="summary-text">Radius Each</div>
                 </div>
                 <div class="summary-item">
-                    <div class="summary-number">~2M</div>
-                    <div class="summary-text">Population Reached</div>
+                    <div class="summary-number">Clackmannanshire</div>
+                    <div class="summary-text">Geographic Focus</div>
                 </div>
                 <div class="summary-item">
-                    <div class="summary-number">4</div>
+                    <div class="summary-number">2</div>
                     <div class="summary-text">HC-One Facilities</div>
                 </div>
             </div>
@@ -92,7 +381,279 @@
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
             integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
-            crossorigin=""></script>
-    <script src="script.js"></script>
+            crossorigin="" 
+            onload="initializeMap()"></script>
+    <script>
+        // Initialize the map when Leaflet loads
+        function initializeMap() {
+            // Initialize map centered on Clackmannanshire area
+            const map = L.map('map', {
+                center: [56.1, -3.85],
+                zoom: 10,
+                zoomControl: true,
+                scrollWheelZoom: true
+            });
+
+            // Add OpenStreetMap tiles
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+                maxZoom: 18,
+                minZoom: 6
+            }).addTo(map);
+
+            // ACTUAL Central Belt targeting areas - Facebook Ads coordinates
+            const targetingAreas = [
+                {
+                    name: "Clackmannanshire Zone 1",
+                    lat: 56.0068,
+                    lng: -3.7843,
+                    location: "Clackmannanshire",
+                    type: "primary_target",
+                    spend: "£50.01",
+                    impressions: "10,925",
+                    cpm: "£4.58",
+                    clicks: "218",
+                    ctr: "2.00%",
+                    description: "Primary targeting zone covering central Clackmannanshire"
+                },
+                {
+                    name: "Clackmannanshire Zone 2", 
+                    lat: 56.1198,
+                    lng: -3.9381,
+                    location: "Clackmannanshire",
+                    type: "primary_target",
+                    spend: "£52.14",
+                    impressions: "11,380",
+                    cpm: "£4.58",
+                    clicks: "228",
+                    ctr: "2.00%",
+                    description: "Secondary targeting zone covering western Clackmannanshire"
+                },
+                {
+                    name: "Clackmannanshire Zone 3",
+                    lat: 56.2549,
+                    lng: -3.9711,
+                    location: "Clackmannanshire",
+                    type: "primary_target",
+                    spend: "£47.88",
+                    impressions: "10,470",
+                    cpm: "£4.57",
+                    clicks: "209",
+                    ctr: "2.00%",
+                    description: "Northern targeting zone covering upper Clackmannanshire"
+                }
+            ];
+
+            // HC-One facilities - estimated locations near Clackmannanshire targeting zones
+            const hcOneFacilities = [
+                { 
+                    name: "HC-One Clackmannanshire Central", 
+                    lat: 56.0200, 
+                    lng: -3.7900, 
+                    beds: "45",
+                    type: "Residential & Nursing Care",
+                    specialties: "Dementia, General Nursing"
+                },
+                { 
+                    name: "HC-One Stirling Area", 
+                    lat: 56.1100, 
+                    lng: -3.9200, 
+                    beds: "38",
+                    type: "Nursing Care",
+                    specialties: "Post-Acute Care, Rehabilitation"
+                }
+            ];
+
+            // Create layer groups for better organization
+            const targetingLayer = L.layerGroup().addTo(map);
+            const citiesLayer = L.layerGroup().addTo(map);
+            const facilitiesLayer = L.layerGroup().addTo(map);
+
+            // Add targeting area circles and zone markers
+            targetingAreas.forEach(area => {
+                // 17km targeting radius circle - ACTUAL Facebook targeting radius
+                const circle = L.circle([area.lat, area.lng], {
+                    color: '#e74c3c',
+                    fillColor: '#e74c3c',
+                    fillOpacity: 0.15,
+                    radius: 17000, // 17km in meters - ACTUAL targeting radius
+                    weight: 3,
+                    opacity: 0.8
+                }).addTo(targetingLayer);
+
+                // Zone marker - consistent styling for all 3 zones
+                const zoneMarker = L.circleMarker([area.lat, area.lng], {
+                    radius: 12,
+                    fillColor: '#e74c3c',
+                    color: 'white',
+                    weight: 3,
+                    opacity: 1,
+                    fillOpacity: 0.9
+                }).addTo(citiesLayer);
+
+                // Detailed popup content for Clackmannanshire targeting zones
+                const popupContent = `
+                    <div class="custom-popup">
+                        <h3>${area.name}</h3>
+                        <div class="info-grid">
+                            <div class="info-item">
+                                <div class="info-label">Location</div>
+                                <div class="info-value">${area.location}</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">Targeting Radius</div>
+                                <div class="info-value">17km</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">Spend</div>
+                                <div class="info-value">${area.spend}</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">Impressions</div>
+                                <div class="info-value">${area.impressions}</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">CPM</div>
+                                <div class="info-value">${area.cpm}</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">Clicks</div>
+                                <div class="info-value">${area.clicks}</div>
+                            </div>
+                        </div>
+                        <div class="highlight">
+                            <strong>CTR:</strong> ${area.ctr} | 
+                            <strong>Coordinates:</strong> ${area.lat.toFixed(4)}, ${area.lng.toFixed(4)}<br>
+                            <strong>Coverage:</strong> ${area.description}
+                        </div>
+                    </div>
+                `;
+
+                circle.bindPopup(popupContent);
+                zoneMarker.bindPopup(popupContent);
+            });
+
+            // Add HC-One facility markers
+            hcOneFacilities.forEach(facility => {
+                const facilityMarker = L.circleMarker([facility.lat, facility.lng], {
+                    radius: 10,
+                    fillColor: '#f39c12',
+                    color: 'white',
+                    weight: 3,
+                    opacity: 1,
+                    fillOpacity: 0.9
+                }).addTo(facilitiesLayer);
+
+                facilityMarker.bindPopup(`
+                    <div class="custom-popup">
+                        <h3>🏥 ${facility.name}</h3>
+                        <div class="info-grid">
+                            <div class="info-item">
+                                <div class="info-label">Capacity</div>
+                                <div class="info-value">${facility.beds} beds</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">Type</div>
+                                <div class="info-value">${facility.type}</div>
+                            </div>
+                        </div>
+                        <div class="highlight">
+                            <strong>Specialties:</strong> ${facility.specialties}<br>
+                            <strong>Strategy:</strong> Strategically located within the Central Belt targeting zone to attract qualified healthcare professionals from the local area.
+                        </div>
+                    </div>
+                `);
+            });
+
+            // Add layer control
+            const overlayMaps = {
+                "Targeting Zones (17km)": targetingLayer,
+                "Zone Markers": citiesLayer,
+                "HC-One Facilities": facilitiesLayer
+            };
+
+            L.control.layers(null, overlayMaps, {
+                position: 'topright',
+                collapsed: false
+            }).addTo(map);
+
+            // Add custom legend control
+            const legend = L.control({position: 'bottomright'});
+            legend.onAdd = function (map) {
+                const div = L.DomUtil.create('div', 'legend');
+                div.innerHTML = `
+                    <div style="background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 20px rgba(0,0,0,0.3); font-size: 14px; min-width: 200px;">
+                        <h4 style="margin: 0 0 15px 0; color: #2a5298; border-bottom: 2px solid #2a5298; padding-bottom: 5px;">Central Belt Targeting - Clackmannanshire</h4>
+                        <div style="display: flex; align-items: center; margin: 8px 0;">
+                            <div style="width: 20px; height: 20px; border: 3px solid #e74c3c; border-radius: 50%; margin-right: 10px; background: rgba(231, 76, 60, 0.15);"></div>
+                            <span>17km targeting radius</span>
+                        </div>
+                        <div style="display: flex; align-items: center; margin: 8px 0;">
+                            <div style="width: 16px; height: 16px; background: #e74c3c; border: 2px solid white; border-radius: 50%; margin-right: 12px;"></div>
+                            <span>Targeting zone center</span>
+                        </div>
+                        <div style="display: flex; align-items: center; margin: 8px 0;">
+                            <div style="width: 16px; height: 16px; background: #f39c12; border: 2px solid white; border-radius: 50%; margin-right: 12px;"></div>
+                            <span>HC-One facilities</span>
+                        </div>
+                        <div style="margin-top: 15px; padding: 12px; background: #f8f9fa; border-radius: 6px; font-size: 12px; border-left: 4px solid #2a5298;">
+                            <strong>Actual Facebook Targeting:</strong><br>
+                            3 zones • 17km radius each<br>
+                            Clackmannanshire focus<br>
+                            <em>Click any circle for exact coordinates</em>
+                        </div>
+                    </div>
+                `;
+                return div;
+            };
+            legend.addTo(map);
+
+            // Add scale control
+            L.control.scale({
+                position: 'bottomleft',
+                metric: true,
+                imperial: false
+            }).addTo(map);
+
+            // Fit map to show all targeting areas with padding
+            const allPoints = targetingAreas.map(area => [area.lat, area.lng]);
+            const group = new L.featureGroup(targetingAreas.map(area => 
+                L.marker([area.lat, area.lng])
+            ));
+            
+            setTimeout(() => {
+                map.fitBounds(group.getBounds().pad(0.15));
+            }, 500);
+
+            // Add map click handler for coordinates (useful for debugging)
+            map.on('click', function(e) {
+                console.log('Clicked at: ' + e.latlng.lat.toFixed(4) + ', ' + e.latlng.lng.toFixed(4));
+            });
+        }
+
+        // Fallback initialization if onload doesn't work
+        document.addEventListener('DOMContentLoaded', function() {
+            // Wait a bit for Leaflet to load
+            setTimeout(function() {
+                if (typeof L !== 'undefined') {
+                    console.log('Leaflet loaded via DOMContentLoaded');
+                } else {
+                    console.error('Leaflet failed to load');
+                    document.getElementById('map').innerHTML = `
+                        <div style="display: flex; align-items: center; justify-content: center; height: 100%; background: #f8f9fa; color: #6c757d; font-size: 18px; text-align: center; padding: 40px;">
+                            <div>
+                                <h3>Map Loading Error</h3>
+                                <p>The mapping library failed to load. This may be due to network restrictions.</p>
+                                <p><strong>Targeting Details:</strong><br>
+                                3 zones in Clackmannanshire, Scotland<br>
+                                17km radius each<br>
+                                Coordinates: (56.0068, -3.7843), (56.1198, -3.9381), (56.2549, -3.9711)</p>
+                            </div>
+                        </div>
+                    `;
+                }
+            }, 1000);
+        });
+    </script>
 </body>
 </html>

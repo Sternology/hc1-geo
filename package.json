@@ -1,0 +1,13 @@
+{
+  "name": "hc-one-targeting-map",
+  "version": "1.0.0",
+  "description": "Interactive map showing HC-One's Facebook Ads targeting in Scotland's Central Belt",
+  "main": "index.html",
+  "scripts": {
+    "dev": "python -m http.server 8000",
+    "build": "echo 'No build step required for static site'"
+  },
+  "keywords": ["facebook-ads", "targeting", "map", "healthcare", "scotland"],
+  "author": "Your Name",
+  "license": "MIT"
+}

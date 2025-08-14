@@ -379,12 +379,8 @@
         </div>
     </div>
 
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-            integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
-            crossorigin="" 
-            onload="initializeMap()"></script>
     <script>
-        // Initialize the map when Leaflet loads
+        // Define the initialization function first
         function initializeMap() {
             // Initialize map centered on Clackmannanshire area
             const map = L.map('map', {
@@ -631,29 +627,22 @@
             });
         }
 
-        // Fallback initialization if onload doesn't work
+        // Initialize when page loads - check if Leaflet is ready
         document.addEventListener('DOMContentLoaded', function() {
-            // Wait a bit for Leaflet to load
-            setTimeout(function() {
-                if (typeof L !== 'undefined') {
-                    console.log('Leaflet loaded via DOMContentLoaded');
-                } else {
-                    console.error('Leaflet failed to load');
-                    document.getElementById('map').innerHTML = `
-                        <div style="display: flex; align-items: center; justify-content: center; height: 100%; background: #f8f9fa; color: #6c757d; font-size: 18px; text-align: center; padding: 40px;">
-                            <div>
-                                <h3>Map Loading Error</h3>
-                                <p>The mapping library failed to load. This may be due to network restrictions.</p>
-                                <p><strong>Targeting Details:</strong><br>
-                                3 zones in Clackmannanshire, Scotland<br>
-                                17km radius each<br>
-                                Coordinates: (56.0068, -3.7843), (56.1198, -3.9381), (56.2549, -3.9711)</p>
-                            </div>
-                        </div>
-                    `;
-                }
-            }, 1000);
+            if (typeof L !== 'undefined') {
+                console.log('Leaflet already loaded, initializing map...');
+                initializeMap();
+            } else {
+                console.log('Waiting for Leaflet to load...');
+                // Leaflet will call initializeMap() when it loads via onload attribute
+            }
         });
+    </script>
+    
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+            integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+            crossorigin="" 
+            onload="if(typeof initializeMap === 'function') initializeMap(); else console.error('initializeMap not found');"></script>
     </script>
 </body>
 </html>
